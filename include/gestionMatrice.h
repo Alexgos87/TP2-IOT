@@ -5,5 +5,6 @@
 extern Adafruit_NeoMatrix matrix;
 
 void flashMatrix(uint16_t c);
+void flashMatrix(uint16_t c, bool keepFlash);
 void updateFlash();
 void fillMatrix(uint16_t c);

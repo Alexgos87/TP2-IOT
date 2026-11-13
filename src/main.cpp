@@ -3,6 +3,7 @@
 #include <Adafruit_NeoMatrix.h>
 #include <ESP32Servo.h>
 #include "gestionMatrice.h"
+#include "gestionBouton.h"
 
 //pin servo
 #define SERVO_PIN 26
@@ -26,6 +27,9 @@ Adafruit_NeoMatrix matrix(8, 8, MATRIX_PIN,
   NEO_MATRIX_PROGRESSIVE, NEO_GRB + NEO_KHZ800);
 
 TM1637Display display(CLK_PIN, DIO_PIN);
+
+Button btnA = {BTN_PIN_A};
+Button btnB = {BTN_PIN_B};
 
 void setup() {
   Serial.begin(9600);
@@ -52,7 +56,6 @@ void loop() {
 
   display.showNumberDec(1234);
 
-  if (digitalRead(BTN_PIN_A) == LOW) flashMatrix(matrix.Color(0, 255, 0));
-  if (digitalRead(BTN_PIN_B) == LOW) fillMatrix(matrix.Color(0, 0, 255));
+  if (isLongPress(btnB)) flashMatrix(matrix.Color(255, 165, 0), true);
 
 }
