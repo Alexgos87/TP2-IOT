@@ -14,8 +14,8 @@
 #define CLK_PIN 17
 #define DIO_PIN 16
 
-#define BTN_PIN_A 12
-#define BTN_PIN_B 13
+#define BTN_PIN_A 13
+#define BTN_PIN_B 12
 
 
 Servo servo;
@@ -51,4 +51,12 @@ void loop() {
   matrix.show();
 
   display.showNumberDec(1234);
+
+  if(digitalRead(BTN_PIN_A) == LOW) {
+    servo.write(0);    // horaire
+  } else if(digitalRead(BTN_PIN_B) == LOW) {
+    servo.write(180);  // anti-horaire
+  } else {
+    servo.write(90);
+  }
 }
