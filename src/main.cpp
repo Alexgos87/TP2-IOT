@@ -2,6 +2,7 @@
 #include <TM1637Display.h>
 #include <Adafruit_NeoMatrix.h>
 #include <ESP32Servo.h>
+#include "gestionMatrice.h"
 
 //pin servo
 #define SERVO_PIN 26
@@ -40,23 +41,18 @@ void setup() {
   //setup du servo :
   servo.attach(SERVO_PIN);
   servo.write(90);
-
+  //setup des boutons :
   pinMode(BTN_PIN_A, INPUT_PULLUP);
   pinMode(BTN_PIN_B, INPUT_PULLUP);
-
+  fillMatrix(matrix.Color(0, 255, 0));
 }
 
 void loop() {
-  matrix.fillScreen(matrix.Color(255, 0, 0));
-  matrix.show();
+  updateFlash();
 
   display.showNumberDec(1234);
 
-  if(digitalRead(BTN_PIN_A) == LOW) {
-    servo.write(0);    // horaire
-  } else if(digitalRead(BTN_PIN_B) == LOW) {
-    servo.write(180);  // anti-horaire
-  } else {
-    servo.write(90);
-  }
+  if (digitalRead(BTN_PIN_A) == LOW) flashMatrix(matrix.Color(0, 255, 0));
+  if (digitalRead(BTN_PIN_B) == LOW) fillMatrix(matrix.Color(0, 0, 255));
+
 }
