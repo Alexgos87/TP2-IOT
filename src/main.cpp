@@ -4,6 +4,7 @@
 #include <ESP32Servo.h>
 #include "gestionMatrice.h"
 #include "gestionBouton.h"
+#include "gestionCode.h"
 
 //pin servo
 #define SERVO_PIN 26
@@ -19,7 +20,6 @@
 #define BTN_PIN_A 13
 #define BTN_PIN_B 12
 
-
 Servo servo;
 
 Adafruit_NeoMatrix matrix(8, 8, MATRIX_PIN,
@@ -30,6 +30,8 @@ TM1637Display display(CLK_PIN, DIO_PIN);
 
 Button btnA = {BTN_PIN_A};
 Button btnB = {BTN_PIN_B};
+
+bool isEnteringCode = false;
 
 void setup() {
   Serial.begin(9600);
@@ -53,9 +55,17 @@ void setup() {
 
 void loop() {
   updateFlash();
+  bool isBLongPressed = isLongPress(btnB);
 
-  display.showNumberDec(1234);
-
-  if (isLongPress(btnB)) flashMatrix(matrix.Color(255, 165, 0), true);
-
+  if (!isEnteringCode) {
+    if (isBLongPressed) {
+      flashMatrix(matrix.Color(255, 165, 0), true);
+      isEnteringCode = true;
+      startEnteringCode();
+    }
+  } else if (enterCode()) {
+    isEnteringCode = false;
+    stopFlash();
+    fillMatrix(matrix.Color(0, 0, 255));
+  }
 }

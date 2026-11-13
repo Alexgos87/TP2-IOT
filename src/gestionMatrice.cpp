@@ -38,3 +38,7 @@ void fillMatrix(uint16_t c) {
   matrix.fillScreen(c);
   matrix.show();
 }
+
+void stopFlash() {
+  nbFlash = 0;
+}
