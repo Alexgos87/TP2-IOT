@@ -8,6 +8,10 @@
 #include "gestionServo.h"
 #include "states/ChestStateMachine.h"
 #include "states/NotProgrammedState.h"
+#include "gestionFirestore.h"
+
+//claude fix
+SET_LOOP_TASK_STACK_SIZE(16 * 1024);
 
 //pin servo
 #define SERVO_PIN 26
@@ -35,10 +39,12 @@ Button btnA = {BTN_PIN_A};
 Button btnB = {BTN_PIN_B};
 
 ChestStateMachine stateMachine;
+
+
+
 bool isBLongPressed = false;
 bool isAJustPressed = false;
 bool wasAPressedInLoop = false;
-
 
 void setup() {
   Serial.begin(9600);
@@ -58,6 +64,8 @@ void setup() {
   pinMode(BTN_PIN_A, INPUT_PULLUP);
   pinMode(BTN_PIN_B, INPUT_PULLUP);
   stateMachine.start(new NotProgrammedState(stateMachine));
+
+  setupFirestore();
 }
 
 void loop() {

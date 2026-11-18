@@ -5,6 +5,7 @@
 #include "gestionMatrice.h"
 #include "gestionCode.h"
 #include "gestionServo.h"
+#include "gestionFirestore.h"
 
 ClosedState::ClosedState(ChestStateMachine& stateMachine)
   : stateMachine(stateMachine) {}
@@ -20,6 +21,7 @@ void ClosedState::update() {
     if (sameCode(code, savedCode)) {
       unlockServo();
       stateMachine.changeState(new OpenState(stateMachine));
+      logEvent("OUVERTURE");
     } else {
       stateMachine.changeState(new WrongCodeState(stateMachine));
     }

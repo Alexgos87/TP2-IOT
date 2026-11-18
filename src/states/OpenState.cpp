@@ -5,6 +5,7 @@
 #include "gestionMatrice.h"
 #include "gestionCode.h"
 #include "gestionServo.h"
+#include "gestionFirestore.h"
 
 OpenState::OpenState(ChestStateMachine& stateMachine)
   : stateMachine(stateMachine) {}
@@ -20,5 +21,6 @@ void OpenState::update() {
   } else if (isAJustPressed) {
     lockServo();
     stateMachine.changeState(new ClosedState(stateMachine));
+    logEvent("FERMETURE");
   }
 }
