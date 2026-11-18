@@ -5,15 +5,9 @@ int nbFlash = 0;
 bool isOn = false;
 unsigned long lastTime = 0;
 
-void flashMatrix(uint16_t c) {
+void flashMatrix(uint16_t c, bool forever) {
   flashColor = c;
-  nbFlash = 3;
-  isOn = false;
-}
-
-void flashMatrix(uint16_t c, bool keepFlash) {
-  flashColor = c;
-  if (keepFlash) {
+  if (forever) {
     nbFlash = -1;
   } else {
     nbFlash = 3;
@@ -37,10 +31,6 @@ void updateFlash() {
 void fillMatrix(uint16_t c) {
   matrix.fillScreen(c);
   matrix.show();
-}
-
-void stopFlash() {
-  nbFlash = 0;
 }
 
 bool isFlashing() {

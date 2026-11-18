@@ -10,7 +10,8 @@
 #include "states/NotProgrammedState.h"
 #include "gestionFirestore.h"
 
-//claude fix
+// Aide de Claude : sans cette ligne, l'ESP32 plante à l'exécution, car la
+// librairie Firebase manque de mémoire de pile avec la taille par défaut.
 SET_LOOP_TASK_STACK_SIZE(16 * 1024);
 
 //pin servo

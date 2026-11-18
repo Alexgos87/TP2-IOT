@@ -1,5 +1,4 @@
 #include "states/ClosedState.h"
-#include "states/ChestStateMachine.h"
 #include "states/OpenState.h"
 #include "states/WrongCodeState.h"
 #include "gestionMatrice.h"
