@@ -32,6 +32,9 @@ Button btnA = {BTN_PIN_A};
 Button btnB = {BTN_PIN_B};
 
 bool isEnteringCode = false;
+int step = 0;
+int firstCode[4];
+
 
 void setup() {
   Serial.begin(9600);
@@ -57,15 +60,40 @@ void loop() {
   updateFlash();
   bool isBLongPressed = isLongPress(btnB);
 
-  if (!isEnteringCode) {
+  if (step == 0) {
     if (isBLongPressed) {
       flashMatrix(matrix.Color(255, 165, 0), true);
-      isEnteringCode = true;
       startEnteringCode();
+      step = 1;
     }
-  } else if (enterCode()) {
-    isEnteringCode = false;
-    stopFlash();
-    fillMatrix(matrix.Color(0, 0, 255));
+  } else if (step == 1) {
+    if (enterCode()) {
+      for (int i = 0; i < 4; i++) firstCode[i] = code[i];
+      startEnteringCode();
+      step = 2;
+    }
+  } else if (step == 2) {
+    if (enterCode()) {
+      if (sameCode(code, firstCode)) {
+        for (int i = 0; i < 4; i++) savedCode[i] = code[i];
+        flashMatrix(matrix.Color(0, 255, 0));
+        step = 4;
+      } else {
+        display.clear();
+        flashMatrix(matrix.Color(255, 0, 0));
+        step = 3;
+      }
+    }
+  } else if (step == 3) {
+    if (!isFlashing()) {
+      flashMatrix(matrix.Color(255, 165, 0), true);
+      startEnteringCode();
+      step = 1;
+    }
+  } else if (step == 4) {
+    if (!isFlashing()) {
+      fillMatrix(matrix.Color(0, 255, 0));
+      step = 0;
+    }
   }
 }

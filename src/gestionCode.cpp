@@ -6,6 +6,8 @@ int position = 0;
 bool wasAPressed = false;
 bool wasBPressed = false;
 
+int savedCode[4];
+
 void startEnteringCode() {
   digit = 0;
   position = 0;
@@ -39,4 +41,11 @@ bool enterCode() {
   wasAPressed = isAPressed;
   wasBPressed = isBPressed;
   return done;
+}
+
+bool sameCode(int a[4], int b[4]) {
+  for (int i = 0; i < 4; i++) {
+    if (a[i] != b[i]) return false;
+  }
+  return true;
 }

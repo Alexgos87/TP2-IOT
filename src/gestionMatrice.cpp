@@ -42,3 +42,7 @@ void fillMatrix(uint16_t c) {
 void stopFlash() {
   nbFlash = 0;
 }
+
+bool isFlashing() {
+  return nbFlash != 0;
+}

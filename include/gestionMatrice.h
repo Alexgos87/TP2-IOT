@@ -9,3 +9,4 @@ void flashMatrix(uint16_t c, bool keepFlash);
 void updateFlash();
 void fillMatrix(uint16_t c);
 void stopFlash();
+bool isFlashing();

@@ -1,6 +1,6 @@
 #include "gestionBouton.h"
 
-const unsigned long LONG_PRESS_TIME = 2000; // ms
+const unsigned long LONG_PRESS_TIME = 3000; // ms
 
 bool isButtonPressed(Button &b) {
   if (millis() - b.lastRead >= 50) {
