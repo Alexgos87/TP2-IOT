@@ -6,6 +6,8 @@
 #include "gestionBouton.h"
 #include "gestionCode.h"
 #include "gestionServo.h"
+#include "states/ChestStateMachine.h"
+#include "states/NotProgrammedState.h"
 
 //pin servo
 #define SERVO_PIN 26
@@ -32,10 +34,9 @@ TM1637Display display(CLK_PIN, DIO_PIN);
 Button btnA = {BTN_PIN_A};
 Button btnB = {BTN_PIN_B};
 
-bool isEnteringCode = false;
-int step = 0;
-int firstCode[4];
-bool hasCode = false;
+ChestStateMachine stateMachine;
+bool isBLongPressed = false;
+bool isAJustPressed = false;
 bool wasAPressedInLoop = false;
 
 
@@ -56,77 +57,17 @@ void setup() {
   //setup des boutons :
   pinMode(BTN_PIN_A, INPUT_PULLUP);
   pinMode(BTN_PIN_B, INPUT_PULLUP);
-  fillMatrix(matrix.Color(0, 255, 0));
+  stateMachine.start(new NotProgrammedState(stateMachine));
 }
 
 void loop() {
   updateFlash();
   updateServo();
-  bool isBLongPressed = isLongPress(btnB);
 
+  isBLongPressed = isLongPress(btnB);
   bool isAPressed = isButtonPressed(btnA);
-  bool isAJustPressed = isAPressed && !wasAPressedInLoop;
+  isAJustPressed = isAPressed && !wasAPressedInLoop;
   wasAPressedInLoop = isAPressed;
 
-  if (step == 0) {
-    if (isBLongPressed) {
-      flashMatrix(matrix.Color(255, 165, 0), true);
-      startEnteringCode();
-      step = 1;
-    } else if (isAJustPressed && hasCode) {
-      lockServo();
-      fillMatrix(matrix.Color(255, 0, 0));
-      startEnteringCode();
-      step = 5;
-    }
-  } else if (step == 1) {
-    if (enterCode()) {
-      for (int i = 0; i < 4; i++) firstCode[i] = code[i];
-      startEnteringCode();
-      step = 2;
-    }
-  } else if (step == 2) {
-    if (enterCode()) {
-      if (sameCode(code, firstCode)) {
-        for (int i = 0; i < 4; i++) savedCode[i] = code[i];
-        hasCode = true;
-        flashMatrix(matrix.Color(0, 255, 0));
-        step = 4;
-      } else {
-        display.clear();
-        flashMatrix(matrix.Color(255, 0, 0));
-        step = 3;
-      }
-    }
-  } else if (step == 3) {
-    if (!isFlashing()) {
-      flashMatrix(matrix.Color(255, 165, 0), true);
-      startEnteringCode();
-      step = 1;
-    }
-  } else if (step == 4) {
-    if (!isFlashing()) {
-      fillMatrix(matrix.Color(0, 255, 0));
-      step = 0;
-    }
-  } else if (step == 5) {
-    if (enterCode()) {
-      if (sameCode(code, savedCode)) {
-        unlockServo();
-        fillMatrix(matrix.Color(0, 255, 0));
-        display.clear();
-        step = 0;
-      } else {
-        display.clear();
-        flashMatrix(matrix.Color(255, 0, 0));
-        step = 6;
-      }
-    }
-  } else if (step == 6) {
-    if (!isFlashing()) {
-      fillMatrix(matrix.Color(255, 0, 0));
-      startEnteringCode();
-      step = 5;
-    }
-  }
+  stateMachine.update();
 }

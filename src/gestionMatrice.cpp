@@ -14,7 +14,7 @@ void flashMatrix(uint16_t c) {
 void flashMatrix(uint16_t c, bool keepFlash) {
   flashColor = c;
   if (keepFlash) {
-    nbFlash = -1; // Infinite flashes
+    nbFlash = -1;
   } else {
     nbFlash = 3;
   }
