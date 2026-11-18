@@ -5,6 +5,7 @@
 #include "gestionMatrice.h"
 #include "gestionBouton.h"
 #include "gestionCode.h"
+#include "gestionServo.h"
 
 //pin servo
 #define SERVO_PIN 26
@@ -34,6 +35,8 @@ Button btnB = {BTN_PIN_B};
 bool isEnteringCode = false;
 int step = 0;
 int firstCode[4];
+bool hasCode = false;
+bool wasAPressedInLoop = false;
 
 
 void setup() {
@@ -58,13 +61,23 @@ void setup() {
 
 void loop() {
   updateFlash();
+  updateServo();
   bool isBLongPressed = isLongPress(btnB);
+
+  bool isAPressed = isButtonPressed(btnA);
+  bool isAJustPressed = isAPressed && !wasAPressedInLoop;
+  wasAPressedInLoop = isAPressed;
 
   if (step == 0) {
     if (isBLongPressed) {
       flashMatrix(matrix.Color(255, 165, 0), true);
       startEnteringCode();
       step = 1;
+    } else if (isAJustPressed && hasCode) {
+      lockServo();
+      fillMatrix(matrix.Color(255, 0, 0));
+      startEnteringCode();
+      step = 5;
     }
   } else if (step == 1) {
     if (enterCode()) {
@@ -76,6 +89,7 @@ void loop() {
     if (enterCode()) {
       if (sameCode(code, firstCode)) {
         for (int i = 0; i < 4; i++) savedCode[i] = code[i];
+        hasCode = true;
         flashMatrix(matrix.Color(0, 255, 0));
         step = 4;
       } else {
@@ -94,6 +108,25 @@ void loop() {
     if (!isFlashing()) {
       fillMatrix(matrix.Color(0, 255, 0));
       step = 0;
+    }
+  } else if (step == 5) {
+    if (enterCode()) {
+      if (sameCode(code, savedCode)) {
+        unlockServo();
+        fillMatrix(matrix.Color(0, 255, 0));
+        display.clear();
+        step = 0;
+      } else {
+        display.clear();
+        flashMatrix(matrix.Color(255, 0, 0));
+        step = 6;
+      }
+    }
+  } else if (step == 6) {
+    if (!isFlashing()) {
+      fillMatrix(matrix.Color(255, 0, 0));
+      startEnteringCode();
+      step = 5;
     }
   }
 }
